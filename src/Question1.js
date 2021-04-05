@@ -9,18 +9,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App({ navigation }) {
     
-    const storeData = async (value) => {
+    const storeData = async (value, key) => {
         try {
-          await AsyncStorage.setItem('@storage_Key', value)
+          await AsyncStorage.setItem(key, value)
         } catch (error) {
           console.log(error)
         }
         console.log('Data Saved')
     }
       
-    const getData = async () => {
+    const getData = async (key) => {
         try {
-            return await AsyncStorage.getItem('@storage_Key')
+            return await AsyncStorage.getItem(key)
         } catch(error) {
             console.log(error)
         }
@@ -29,10 +29,10 @@ export default function App({ navigation }) {
 
     const [errorStyle, setErrorStyle] = useState({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
 
-    const pressHandler = () => {
-        if (globalVariables.month != 'Select a Month' && globalVariables.day != 'Select a Day' && globalVariables.year != 'Select a Year') {
+    const pressHandler = async () => {
+        if (await getData('month') != 'Select a Month' && globalVariables.day != 'Select a Day' && globalVariables.year != 'Select a Year') {
             navigation.navigate('Question2')
-            console.log(getData())
+            console.log(await getData('month'))
             // console.log(globalVariables.month, globalVariables.day, globalVariables.year)
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
         } else {
@@ -64,7 +64,7 @@ export default function App({ navigation }) {
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => storeData(item.label)}
+                onChangeItem={item => storeData(item.label, 'month')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={5000}
                 style={{
