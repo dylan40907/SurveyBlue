@@ -5,7 +5,7 @@ import AppLoading from 'expo-app-loading';
 import { StyleSheet, Text, View } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
-import Navigator from '../routes/welcomeStack'
+import Navigator from '../routes/stack'
 
 const getFonts = () => Font.loadAsync({
   'din-regular': require('../assets/fonts/din-regular.ttf'),
