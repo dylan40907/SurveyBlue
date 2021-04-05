@@ -1,19 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { globalStyles, globalVariables } from '../styles/global.js'
+import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App({ navigation }) {
 
+    const storeData = async (value, key) => {
+        try {
+          await AsyncStorage.setItem(key, value)
+        } catch (error) {
+          console.log(error)
+        }
+    }
+      
+    const getData = async (key) => {
+        try {
+            return await AsyncStorage.getItem(key)
+        } catch(error) {
+            console.log(error)
+        }
+    } 
+
     const [errorStyle, setErrorStyle] = useState({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
 
-    const pressHandler = () => {
-        if (globalVariables.color != 'Select a Color' && globalVariables.Food != 'Select a Cuisine' && globalVariables.music != 'Select a Genre') {
-            navigation.navigate('Finished')
-            console.log(globalVariables.color, globalVariables.food, globalVariables.music)
+    const pressHandler = async () => {
+        if (await getData('color') != null  && await getData('food') != null && await getData('music') != null) {
+            navigation.replace('Finished')
+            storeData('true', 'welcomeFinished')
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
         } else {
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'flex'})
@@ -35,12 +52,12 @@ export default function App({ navigation }) {
                     {label: 'Black', value: '7'},
                     {label: 'White', value: '8'},
                 ]}
-                placeholder={globalVariables.color}
+                placeholder={'Select a Color'}
                 containerStyle={{height: 40}}
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => globalVariables.color=item.label}
+                onChangeItem={item => storeData(item.label, 'color')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={5000}
                 style={{
@@ -63,12 +80,12 @@ export default function App({ navigation }) {
                     {label: 'Thai', value: '9'},
                     {label: 'African', value: '9'},
                 ]}
-                placeholder={globalVariables.food}
+                placeholder={'Select a Cuisine'}
                 containerStyle={{height: 40}}
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => globalVariables.food=item.label}
+                onChangeItem={item => storeData(item.label, 'food')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={4000}
                 style={{
@@ -91,12 +108,12 @@ export default function App({ navigation }) {
                     {label: 'Electronic', value: '11'},
                     {label: 'Funk', value: '11'},
                 ]}
-                placeholder={globalVariables.music}
+                placeholder={'Select a Genre'}
                 containerStyle={{height: 40}}
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => globalVariables.music=item.label}
+                onChangeItem={item => storeData(item.label, 'music')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={3000}
                 style={{
@@ -106,7 +123,7 @@ export default function App({ navigation }) {
             />
             <Text style={errorStyle}>Please answer all fields</Text>
             <View style={styles.button}>
-                <FlatButton text="Continue" icon="arrow-right" onPress={pressHandler} />
+                <FlatButton text="Finish" icon="arrow-right" onPress={pressHandler} />
             </View>
             <StatusBar style="auto" />
         </View>

@@ -18,6 +18,7 @@ export default function App() {
     return (
       <Navigator />
     );
+    navigation.navigate('Question3')
   } else {
     return (
       <AppLoading 

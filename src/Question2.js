@@ -1,22 +1,37 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { globalStyles, globalVariables } from '../styles/global.js'
+import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App({ navigation }) {
 
-    const yesPressHandler = () => {
-        globalVariables.isVaccinated = true
+    const storeData = async (value, key) => {
+        try {
+          await AsyncStorage.setItem(key, value)
+        } catch (error) {
+          console.log(error)
+        }
+    }
+      
+    const getData = async (key) => {
+        try {
+            return await AsyncStorage.getItem(key)
+        } catch(error) {
+            console.log(error)
+        }
+    } 
+
+    const yesPressHandler = async () => {
+        storeData('true', 'isVaccinated')
         navigation.navigate('Question3')
-        console.log(globalVariables.isVaccinated)
+        console.log(await getData('isVaccinated'))
     }
 
-    const noPressHandler = () => {
-        globalVariables.isVaccinated = false
+    const noPressHandler = async () => {
+        storeData('false', 'isVaccinated')
         navigation.navigate('Question3')
-        console.log(globalVariables.isVaccinated)
     }
 
     return (

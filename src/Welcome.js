@@ -3,13 +3,29 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App({ navigation }) {
 
-    const pressHandler = () => {
-        navigation.navigate('Question1')
+    const checker = async () => {
+        if (await getData('welcomeFinished') == 'true') {
+            navigation.replace('Home')
+        }
     }
+
+    const getData = async (key) => {
+        try {
+            return await AsyncStorage.getItem(key)
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    const pressHandler = () => {
+        navigation.replace('Question1')
+    }
+
+    checker()
 
     return (
         <View style={globalStyles.container}>

@@ -8,7 +8,7 @@ import FlatButton from '../shared/button'
 export default function App({ navigation }) {
 
     const pressHandler = () => {
-        // navigation.navigate('Question1')
+        navigation.navigate('Home')
     }
 
     return (

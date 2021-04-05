@@ -26,14 +26,3 @@ export const globalStyles = StyleSheet.create({
     margin: 5,
   },
 });
-
-export const globalVariables = {
-  welcomeCompleted: false,
-  month: 'Select a Month',
-  day: 'Select a Day',
-  year: 'Select a Year',
-  isVaccinated: false,
-  color: 'Select a Color',
-  food: 'Select a Cuisine',
-  music: 'Select a Genre',
-}

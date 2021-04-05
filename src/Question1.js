@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { globalStyles, globalVariables } from '../styles/global.js'
+import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+// https://icons.expo.fyi/Foundation/x
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,7 +16,6 @@ export default function App({ navigation }) {
         } catch (error) {
           console.log(error)
         }
-        console.log('Data Saved')
     }
       
     const getData = async (key) => {
@@ -24,16 +24,13 @@ export default function App({ navigation }) {
         } catch(error) {
             console.log(error)
         }
-        console.log('Data Retrieved')
     } 
 
     const [errorStyle, setErrorStyle] = useState({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
 
     const pressHandler = async () => {
-        if (await getData('month') != 'Select a Month' && globalVariables.day != 'Select a Day' && globalVariables.year != 'Select a Year') {
+        if (await getData('month') != null  && await getData('day') != null && await getData('year') != null) {
             navigation.navigate('Question2')
-            console.log(await getData('month'))
-            // console.log(globalVariables.month, globalVariables.day, globalVariables.year)
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
         } else {
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'flex'})
@@ -44,6 +41,7 @@ export default function App({ navigation }) {
         <View style={globalStyles.container}>
             <Text style={globalStyles.titleText}>Date of Birth</Text>
             <Text style={styles.label}>Month</Text>
+            {/* https://github.com/hossein-zare/react-native-dropdown-picker */}
             <DropDownPicker
                 items={[
                     {label: 'January', value: '1'},
@@ -59,7 +57,7 @@ export default function App({ navigation }) {
                     {label: 'November', value: '11'},
                     {label: 'December', value: '12'},
                 ]}
-                placeholder={globalVariables.month}
+                placeholder={'Select a Month'}
                 containerStyle={{height: 40}}
                 itemStyle={{
                     justifyContent: 'flex-start'
@@ -107,12 +105,12 @@ export default function App({ navigation }) {
                     {label: '30', value: '30'},
                     {label: '31', value: '31'},
                 ]}
-                placeholder={globalVariables.day}
+                placeholder="Select a Day"
                 containerStyle={{height: 40}}
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => globalVariables.day=item.label}
+                onChangeItem={item => storeData(item.label, 'day')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={4000}
                 style={{
@@ -245,12 +243,12 @@ export default function App({ navigation }) {
                     {label: '1901', value: '31'},
                     {label: '1900', value: '31'},
                 ]}
-                placeholder={globalVariables.year}
+                placeholder={'Select a Year'}
                 containerStyle={{height: 40}}
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => globalVariables.year=item.label}
+                onChangeItem={item => storeData(item.label, 'year')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={3000}
                 style={{
