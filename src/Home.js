@@ -8,12 +8,21 @@ import FlatButton from '../shared/button'
 export default function App({ navigation }) {
 
     const pressHandler = () => {
-        // navigation.navigate('Question1')
+        console.log(graphicData)
     }
+
+    const defaultGraphicData = [
+        { y: 25, label: '25%', name: 'Choice 1'}, 
+        { y: 45, label: '45%', name: 'Choice 2'}, 
+        { y: 30, label: '30%', name: 'Choice 3'}
+    ];
+
+    const [graphicData, setGraphicData] = useState(defaultGraphicData);
 
     return (
         <View style={globalStyles.container}>
             <Text style={globalStyles.titleText}>Home</Text>
+            <FlatButton text="Change" icon="arrow-right" onPress={pressHandler} />
             <StatusBar style="auto" />
         </View>
     )

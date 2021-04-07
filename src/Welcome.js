@@ -8,8 +8,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function App({ navigation }) {
 
     const checker = async () => {
+        // await storeData('', 'welcomeFinished')
         if (await getData('welcomeFinished') == 'true') {
-            navigation.replace('Home')
+            navigation.replace('WelcomeResults') // supposed to be home
+        }
+    }
+
+    const storeData = async (value, key) => {
+        try {
+          await AsyncStorage.setItem(key, value)
+        } catch (error) {
+          console.log(error)
         }
     }
 
