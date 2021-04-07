@@ -49,7 +49,7 @@ export default function App({ navigation }) {
     const pressHandler = () => {
         randomDatapointGenerator()
         setGraphicData([
-            { y: randomDatapoints[0], x: 1, label: ' ' + String(randomDatapoints[0]) + ' ', name: 'Choice 1', fillColor: graphicColor[0]}, 
+            { y: randomDatapoints[0], x: 1, label: ' ' + randomDatapoints[0] + ' ', name: 'Choice 1', fillColor: graphicColor[0]}, 
             { y: randomDatapoints[1], x: 2, label: ' ' + randomDatapoints[1] + ' ', fillColor: graphicColor[1]}, 
             { y: randomDatapoints[2], x: 3, label: ' ' + randomDatapoints[2] + ' ', fillColor: graphicColor[2]}
         ])
