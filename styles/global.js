@@ -13,6 +13,12 @@ export const globalStyles = StyleSheet.create({
     color: '#333',
     lineHeight: 40
   },
+  subtitleText: {
+    fontFamily: 'din-bold',
+    fontSize: 20,
+    color: '#333',
+    lineHeight: 40
+  },
   paragraph: {
     marginVertical: 8,
     lineHeight: 20,

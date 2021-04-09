@@ -1,5 +1,6 @@
 import { createStackNavigator } from 'react-navigation-stack'
 import { createAppContainer } from 'react-navigation'
+import { StyleSheet } from 'react-native'
 
 import Welcome from '../src/Welcome'
 import Question1 from '../src/Question1'
@@ -8,6 +9,27 @@ import Question3 from '../src/Question3'
 import Finished from '../src/Finished'
 import WelcomeResults from '../src/welcomeResults'
 import Home from '../src/Home'
+import CreateSurvey from '../src/createSurvey'
+
+function homeButtons () {
+    return (
+        <View style={styles.buttons}>
+            <TouchableOpacity style={styles.editButton}>
+                <View style={styles.editButton}>
+                    <FontAwesome name="circle" size={58} color="rgb(50, 138, 214)" />
+                    <View style={styles.pen}>
+                        <FontAwesome5 name="pen" size={25} color="white" />
+                    </View>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.addButton}>
+                <View>
+                    <AntDesign name="pluscircle" size={50} color="rgb(50, 138, 214)" />
+                </View>
+            </TouchableOpacity>
+        </View>
+    )
+}
 
 const screens = {
     Welcome: {
@@ -59,8 +81,33 @@ const screens = {
             gestureEnabled: false,
             animationEnabled: false,
         }
+    },
+    CreateSurvey: {
+        screen: CreateSurvey,
+        navigationOptions: {
+            title: 'Create a Survey'
+        }
     }
 }
+
+const styles = StyleSheet.create({
+    buttons: {
+        alignSelf: 'flex-end',
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    addButton: {
+        marginLeft: 10,
+        justifyContent: 'center'
+    },
+    editButton: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    pen: {
+        position: 'absolute'
+    }
+  });  
 
 const WelcomeStack = createStackNavigator(screens)
 

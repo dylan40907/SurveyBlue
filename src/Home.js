@@ -1,14 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
+import { Ionicons, FontAwesome5, AntDesign, FontAwesome } from '@expo/vector-icons';
 
 
 export default function App({ navigation }) {
 
-    const pressHandler = () => {
-        console.log(graphicData)
+    const createPressHandler = () => {
+        navigation.navigate('CreateSurvey')
     }
 
     const defaultGraphicData = [
@@ -20,16 +21,47 @@ export default function App({ navigation }) {
     const [graphicData, setGraphicData] = useState(defaultGraphicData);
 
     return (
-        <View style={globalStyles.container}>
-            <Text style={globalStyles.titleText}>Home</Text>
-            <FlatButton text="Change" icon="arrow-right" onPress={pressHandler} />
+        <View style={styles.container}>
+            <View style={styles.buttons}>
+                <TouchableOpacity style={styles.editButton}>
+                    <View style={styles.editButton}>
+                        <FontAwesome name="circle" size={58} color="rgb(50, 138, 214)" />
+                        <View style={styles.pen}>
+                            <FontAwesome5 name="pen" size={25} color="white" />
+                        </View>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.addButton} onPress={createPressHandler}>
+                    <View>
+                        <AntDesign name="pluscircle" size={50} color="rgb(50, 138, 214)" />
+                    </View>
+                </TouchableOpacity>
+            </View>
             <StatusBar style="auto" />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    button: {
-      marginTop: 60,
+    container: {
+        backgroundColor: 'white',
+        padding: 20,
+        flex: 1
+    },
+    buttons: {
+        alignSelf: 'flex-end',
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    addButton: {
+        marginLeft: 10,
+        justifyContent: 'center'
+    },
+    editButton: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    pen: {
+        position: 'absolute'
     }
   });  

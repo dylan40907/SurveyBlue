@@ -46,18 +46,25 @@ export default function App({ navigation }) {
         randomDatapoints.push(Math.floor(Math.random() * 10) + 1)
     }
 
-    const pressHandler = () => {
+    const randomPressHandler = () => {
         randomDatapointGenerator()
         setGraphicData([
-            { y: randomDatapoints[0], x: 1, label: ' ' + randomDatapoints[0] + ' ', name: 'Choice 1', fillColor: graphicColor[0]}, 
-            { y: randomDatapoints[1], x: 2, label: ' ' + randomDatapoints[1] + ' ', fillColor: graphicColor[1]}, 
-            { y: randomDatapoints[2], x: 3, label: ' ' + randomDatapoints[2] + ' ', fillColor: graphicColor[2]}
+            { y: randomDatapoints[0], x: 1, fillColor: graphicColor[0]}, 
+            { y: randomDatapoints[1], x: 2, fillColor: graphicColor[1]}, 
+            { y: randomDatapoints[2], x: 3, fillColor: graphicColor[2]}
         ])
         // navigation.navigate('Home')
     }
     
+    const pressHandler = () => {
+        navigation.navigate('Home')
+    }
 
     // console.log(graphicData)
+
+    const labels = graphicData.map((item) => {
+        return`${item.y}`
+    })
 
     useEffect(() => {setGraphicData(wantedGraphicData)}, [])
 
@@ -73,6 +80,7 @@ export default function App({ navigation }) {
                 cornerRadius={4}
                 padAngle={5}
                 labelRadius={110}
+                labels={labels}
                 style={{
                     labels: {
                         fontFamily: 'Arial',
@@ -102,7 +110,7 @@ export default function App({ navigation }) {
                     data={graphicData}
                     colorScale={graphicColor}
                     labelComponent={<VictoryLabel dy={25}/>}
-                    labels={['3', '23', '23']}
+                    labels={labels}
                     style={{
                         data: {
                             fill: ({datum}) => datum.fillColor,
@@ -117,15 +125,16 @@ export default function App({ navigation }) {
                     }}
                 />
              </VictoryChart>
-             {/* <VictoryLegend 
+             <VictoryLegend 
                 orientation="horizontal"
                 gutter={20}
                 data={graphicData}
                 colorScale={graphicColor}
-                symbolSpacer={5}
-             /> */}
+                symbolSpacer={6}
+             />
             <View style={styles.button}>
-                <FlatButton text="Change" icon="arrow-right" onPress={pressHandler} />
+                <FlatButton text="Change" icon="arrow-right" onPress={randomPressHandler} />
+                <FlatButton text="Continue" icon="arrow-right" onPress={pressHandler} />
             </View>
             <StatusBar style="auto" />
         </View>
@@ -134,7 +143,8 @@ export default function App({ navigation }) {
 
 const styles = StyleSheet.create({
     button: {
-      marginTop: -20,
+      marginTop: -280,
+      flexDirection: 'row'
     },
     container: {
         flex: 1,

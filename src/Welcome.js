@@ -10,7 +10,7 @@ export default function App({ navigation }) {
     const checker = async () => {
         // await storeData('', 'welcomeFinished')
         if (await getData('welcomeFinished') == 'true') {
-            navigation.replace('WelcomeResults') // supposed to be home
+            navigation.replace('Home') // supposed to be home
         }
     }
 
