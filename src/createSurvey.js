@@ -3,16 +3,16 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
-import { Ionicons, FontAwesome5, AntDesign } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, AntDesign, MaterialIcons } from '@expo/vector-icons';
 // https://icons.expo.fyi/Foundation/x
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App({ navigation }) {
 
-    const [question, setQuestion] = useState()
-    const [choices, setchoices] = useState([{ text: 'test1', key: '2'}, { text: 'test2', key: '3'} ])
-    const [newChoice, setNewChoice] = useState([])
+    const [question, setQuestion] = useState('')
+    const [choices, setChoices] = useState([])
+    const [newChoice, setNewChoice] = useState('')
     const [responses, setResponses] = useState([])
     
     const storeData = async (value, key) => {
@@ -31,17 +31,55 @@ export default function App({ navigation }) {
         }
     } 
 
+    const [questionData, setQuestionData] = useState()
+    const [choicesData, setChoicesData] = useState([])
+    const [responsesData, setResponsesData] = useState([])
+
     const [errorStyle, setErrorStyle] = useState({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
 
+    function ChoiceItem({ item, pressHandler }) {
+        return (
+          <TouchableOpacity onPress={() => pressHandler(item.key)}>
+            <View style={styles.item}>
+              <MaterialIcons name='delete' size={18} color='#333' />
+              <Text style={styles.itemText}>{item.choice}</Text>
+            </View>
+          </TouchableOpacity>
+        )
+      }
+
     const submitHandler = async () => {
-        
+        if(choices.length > 1 && choices.length < 5 && question.length > 0){
+            for (var i=0; i < choices.length; i++) {
+                choicesData.push(choices[i].choice)
+                responsesData.push(0)
+            }
+            setQuestionData({
+                question: question,
+                choices: choicesData,
+                responses: responsesData
+            })
+            storeData(JSON.stringify(JSON.stringify(questionData)), 'newQuestionData')
+            storeData(JSON.stringify(JSON.stringify(questionData)), 'newQuestionData')
+            // navigation.navigate('AnswerOwnSurvey')
+            setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
+        } else {
+            setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'flex'})
+        }
     }
 
-    const addChoice = (text) => {
-        if(text.length > 0) {
-            setTodos((prevChoices) => {
+    const checkerHandler = async () => {
+        // console.log(questionData)
+        // console.log(JSON.stringify(JSON.stringify(questionData)))
+        // console.log(JSON.parse(JSON.stringify(JSON.stringify(questionData))))
+        console.log(await getData('newQuestionData'))
+    }
+
+    const addChoice = () => {
+        if(newChoice.length > 0) {
+            setChoices((prevChoices) => {
               return [
-                { text: text, key: Math.random().toString() },
+                { choice: newChoice, key: Math.random().toString() },
                 ...prevChoices
               ];
             })
@@ -50,6 +88,12 @@ export default function App({ navigation }) {
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'flex'})
         }
     }
+
+    const removeChoice = (key) => {
+        setChoices((prevChoices) => {
+          return prevChoices.filter(choice => choice.key != key)
+        })
+      }
 
     return (
         <TouchableWithoutFeedback onPress={() => {
@@ -84,7 +128,7 @@ export default function App({ navigation }) {
                 placeholder="Question"
                 onChangeText={(question)=>{setQuestion(question)}}
             />
-            <Text style={globalStyles.subtitleText}>Choices</Text>
+            <Text style={globalStyles.subtitleText}>Custom Choices</Text>
             <View style={styles.addChoice}>
                 <TextInput 
                     style={styles.choiceInput}
@@ -97,15 +141,20 @@ export default function App({ navigation }) {
                     </View>
                 </TouchableOpacity>
             </View>
-            <Text style={errorStyle}>Please answer all fields</Text>
+            <Text style={errorStyle}>Please answer all fields and/or have 2-4 choices</Text>
 
+            <FlatList 
+                data={choices}
+                renderItem={({ item }) => (
+                    <ChoiceItem item={item} pressHandler={removeChoice} />
+                )}
+            />
             <View style={styles.button}>
                 <FlatButton text="Submit" icon="arrow-right" onPress={submitHandler} />
             </View>
-            <FlatList 
-                data={choices}
-                renderItem={()=>{}}
-            />
+            <View style={styles.button}>
+                <FlatButton text="Checker" icon="arrow-right" onPress={checkerHandler} />
+            </View>
             <StatusBar style="auto" />
         </View>
         </TouchableWithoutFeedback>
@@ -156,5 +205,17 @@ const styles = StyleSheet.create({
     },
     addChoice: {
         flexDirection: 'row',
+    },
+    item: {
+        padding: 16,
+        marginTop: 16,
+        borderColor: '#bbb',
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderRadius: 10,
+        flexDirection: 'row',
+    },
+    itemText: {
+        marginLeft: 10,
     }
   });
