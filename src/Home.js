@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
-import { Ionicons, FontAwesome5, AntDesign, FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5, AntDesign, FontAwesome } from '@expo/vector-icons';
 
 
 export default function App({ navigation }) {

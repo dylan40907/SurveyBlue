@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,11 +21,7 @@ export default function App({ navigation }) {
         } catch(error) {
             console.log(error)
         }
-    }
-
-    const getQuestion = async () => {
-        
-    }
+    } 
 
     const [questionData, setQuestionData] = useState({})
 
@@ -34,29 +30,15 @@ export default function App({ navigation }) {
         setQuestionData(JSON.parse(await getData('newQuestionData')))
     }
 
-    const pressHandler = (index) => {
-        questionData.responses[index] += 1
-        storeData(JSON.stringify(questionData), 'newQuestionData')
-        console.log(questionData.responses)
-        navigation.navigate('SurveyResults')
-    }
-
     onStart()
 
     return (
         <View style={globalStyles.container}>
             <View style={styles.container}>
+                <Text style={globalStyles.titleText}>Survey Sent!</Text>
                 <Text style={globalStyles.titleText}>{questionData.question}</Text>
-                <View style={styles.buttons}>
-                    <View style={styles.button}>
-                        <FlatList 
-                            data={questionData.choices}
-                            renderItem={({ item, index }) => (
-                                <FlatButton text={item} icon="" onPress={() => {pressHandler(index)}} />
-                            )}
-                        />
-                    </View>
-                </View>
+                <Text style={globalStyles.titleText}>Responses:</Text>
+                <Text style={globalStyles.titleText}>{questionData.responses}</Text>
                 <StatusBar style="auto" />
             </View>
         </View>

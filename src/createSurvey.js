@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
-import { Ionicons, FontAwesome5, AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 // https://icons.expo.fyi/Foundation/x
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,11 +13,11 @@ export default function App({ navigation }) {
     const [question, setQuestion] = useState('')
     const [choices, setChoices] = useState([])
     const [newChoice, setNewChoice] = useState('')
-    const [responses, setResponses] = useState([])
     
     const storeData = async (value, key) => {
         try {
           await AsyncStorage.setItem(key, value)
+          console.log(value)
         } catch (error) {
           console.log(error)
         }
@@ -31,48 +31,29 @@ export default function App({ navigation }) {
         }
     } 
 
-    const [questionData, setQuestionData] = useState()
-    const [choicesData, setChoicesData] = useState([])
-    const [responsesData, setResponsesData] = useState([])
-
     const [errorStyle, setErrorStyle] = useState({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
-
-    function ChoiceItem({ item, pressHandler }) {
-        return (
-          <TouchableOpacity onPress={() => pressHandler(item.key)}>
-            <View style={styles.item}>
-              <MaterialIcons name='delete' size={18} color='#333' />
-              <Text style={styles.itemText}>{item.choice}</Text>
-            </View>
-          </TouchableOpacity>
-        )
-      }
 
     const submitHandler = async () => {
         if(choices.length > 1 && choices.length < 5 && question.length > 0){
+            let responsesData = []
+            let choicesData = []
             for (var i=0; i < choices.length; i++) {
                 choicesData.push(choices[i].choice)
                 responsesData.push(0)
             }
-            setQuestionData({
+            
+            const questionData = {
                 question: question,
                 choices: choicesData,
                 responses: responsesData
-            })
-            storeData(JSON.stringify(JSON.stringify(questionData)), 'newQuestionData')
-            storeData(JSON.stringify(JSON.stringify(questionData)), 'newQuestionData')
-            // navigation.navigate('AnswerOwnSurvey')
+            }
+
+            storeData(JSON.stringify(questionData), 'newQuestionData')
+            navigation.navigate('AnswerOwnSurvey')
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
         } else {
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'flex'})
         }
-    }
-
-    const checkerHandler = async () => {
-        // console.log(questionData)
-        // console.log(JSON.stringify(JSON.stringify(questionData)))
-        // console.log(JSON.parse(JSON.stringify(JSON.stringify(questionData))))
-        console.log(await getData('newQuestionData'))
     }
 
     const addChoice = () => {
@@ -83,6 +64,7 @@ export default function App({ navigation }) {
                 ...prevChoices
               ];
             })
+            setNewChoice('')
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'none'})
         } else {
             setErrorStyle({fontWeight: 'bold', marginTop: 10, color: 'red', display: 'flex'})
@@ -114,7 +96,6 @@ export default function App({ navigation }) {
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
-                onChangeItem={item => storeData(item.label, 'month')}
                 dropDownStyle={{backgroundColor: '#fff', borderColor: 'rgb(197, 206, 214)', borderWidth: 2}}
                 zIndex={5000}
                 style={{
@@ -127,6 +108,7 @@ export default function App({ navigation }) {
                 style={styles.input}
                 placeholder="Question"
                 onChangeText={(question)=>{setQuestion(question)}}
+                value={question}
             />
             <Text style={globalStyles.subtitleText}>Custom Choices</Text>
             <View style={styles.addChoice}>
@@ -134,6 +116,7 @@ export default function App({ navigation }) {
                     style={styles.choiceInput}
                     placeholder="Choice"
                     onChangeText={(choice)=>{setNewChoice(choice)}}
+                    value={newChoice}
                 />
                 <TouchableOpacity style={styles.addButton} onPress={addChoice}>
                     <View>
@@ -152,12 +135,22 @@ export default function App({ navigation }) {
             <View style={styles.button}>
                 <FlatButton text="Submit" icon="arrow-right" onPress={submitHandler} />
             </View>
-            <View style={styles.button}>
-                <FlatButton text="Checker" icon="arrow-right" onPress={checkerHandler} />
-            </View>
             <StatusBar style="auto" />
         </View>
         </TouchableWithoutFeedback>
+    )
+}
+
+function ChoiceItem({ item, pressHandler }) {
+    return (
+      <TouchableWithoutFeedback>
+        <View style={styles.item}>
+            <TouchableOpacity onPress={() => pressHandler(item.key)}>
+                <FontAwesome name='minus-circle' size={32} color='rgb(50, 138, 214)' />
+            </TouchableOpacity>
+          <Text style={styles.itemText}>{item.choice}</Text>
+        </View>
+    </TouchableWithoutFeedback>
     )
 }
 
@@ -207,15 +200,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     item: {
-        padding: 16,
+        padding: 7,
+        paddingLeft: 9,
         marginTop: 16,
-        borderColor: '#bbb',
-        borderWidth: 1,
-        borderStyle: 'dashed',
-        borderRadius: 10,
+        borderColor: 'rgb(197, 206, 214)',
+        borderWidth: 2,
+        borderRadius: 5,
         flexDirection: 'row',
     },
     itemText: {
         marginLeft: 10,
+        alignSelf: 'center'
     }
   });

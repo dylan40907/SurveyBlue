@@ -4,7 +4,7 @@ import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 export default function FlatButton({ text, icon, onPress }) {
     return (
-        <TouchableOpacity onPress={onPress}>
+        <TouchableOpacity style={{margin: 5}} onPress={onPress}>
             <View style={styles.button}>
                 <FontAwesome5 name={icon} size={18} color="white" style={styles.icon} />
                 <Text style={styles.buttonText}>{ text }</Text>

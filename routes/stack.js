@@ -11,6 +11,7 @@ import WelcomeResults from '../src/welcomeResults'
 import Home from '../src/Home'
 import CreateSurvey from '../src/createSurvey'
 import AnswerOwnSurvey from '../src/answerOwnSurvey'
+import SurveyResults from '../src/surveyResults'
 
 function homeButtons () {
     return (
@@ -93,6 +94,14 @@ const screens = {
         screen: AnswerOwnSurvey,
         navigationOptions: {
             title: 'Answer Your Own Survey',
+            headerLeft: () => null,
+            gestureEnabled: false,
+        }
+    },
+    SurveyResults: {
+        screen: SurveyResults,
+        navigationOptions: {
+            title: 'Survey Results',
             headerLeft: () => null,
             gestureEnabled: false,
         }
