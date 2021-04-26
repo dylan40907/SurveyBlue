@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, random} from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, RecyclerViewBackedScrollViewComponent } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import { VictoryChart, VictoryLegend, VictoryPie, VictoryBar, VictoryLabel } from 'victory-native';
@@ -110,7 +110,7 @@ export default function App({ navigation }) {
                     data={graphicData}
                     colorScale={graphicColor}
                     labelComponent={<VictoryLabel dy={25}/>}
-                    labels={labels}
+                    labels={labels} 
                     style={{
                         data: {
                             fill: ({datum}) => datum.fillColor,

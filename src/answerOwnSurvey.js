@@ -31,7 +31,9 @@ export default function App({ navigation }) {
 
     const onStart = async () => {
         // navigation.navigate('Question3')
-        setQuestionData(JSON.parse(await getData('newQuestionData')))
+        const data = await getData('newQuestionData')
+        // console.log(JSON.parse(data).choices)
+        setQuestionData(JSON.parse(data))
     }
 
     const pressHandler = (index) => {
@@ -47,7 +49,7 @@ export default function App({ navigation }) {
         <View style={globalStyles.container}>
             <View style={styles.container}>
                 <Text style={globalStyles.titleText}>{questionData.question}</Text>
-                <View style={styles.buttons}>
+                {/* <View style={styles.buttons}>
                     <View style={styles.button}>
                         <FlatList 
                             data={questionData.choices}
@@ -56,7 +58,9 @@ export default function App({ navigation }) {
                             )}
                         />
                     </View>
-                </View>
+                </View> */}
+                {/* {questionData.choices && questionData.choices.map((item, index) => <Text key={item + index}>{item}</Text>)} */}
+                {questionData.choices && questionData.choices.map((item, index) => <FlatButton key={item + index} text={item} icon="" onPress={() => {pressHandler(index)}} />)}
                 <StatusBar style="auto" />
             </View>
         </View>

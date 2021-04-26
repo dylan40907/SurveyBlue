@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { VictoryChart, VictoryLegend, VictoryPie, VictoryBar, VictoryLabel } from 'victory-native';
 
 export default function App({ navigation }) {
 
@@ -24,23 +25,57 @@ export default function App({ navigation }) {
     } 
 
     const [questionData, setQuestionData] = useState({})
+    const [responseData, setResponseData] = useState([])
+    const graphicColor = ['#388087', '#6fb3b8', '#badfe7'];
 
     const onStart = async () => {
         // navigation.navigate('Question3')
         setQuestionData(JSON.parse(await getData('newQuestionData')))
     }
 
+    // const testPressHandler = async () => {
+    //     questionData.responses && questionData.responses.map((item, index) => {
+    //         responseData.push({y: item, label: questionData.choices[index]})
+    //         setResponseData(responseData)
+    //     })
+    //     console.log(responseData)
+    // }
+    
+    const labels = responseData.map((item) => {
+        return`${item.y}`
+    })
+
     onStart()
 
     return (
         <View style={globalStyles.container}>
             <View style={styles.container}>
-                <Text style={globalStyles.titleText}>Survey Sent!</Text>
                 <Text style={globalStyles.titleText}>{questionData.question}</Text>
-                <Text style={globalStyles.titleText}>Responses:</Text>
-                <Text style={globalStyles.titleText}>{questionData.responses}</Text>
+                <Text>{questionData.responses}</Text>
+                <VictoryPie 
+                    animate={{ easing: 'exp', duration: 1000 }}
+                    data={responseData} 
+                    width={Dimensions.get("window").width}
+                    height={300} 
+                    colorScale={graphicColor} 
+                    innerRadius={40}
+                    cornerRadius={4}
+                    padAngle={5}
+                    labelRadius={110}
+                    labels={labels}
+                    style={{
+                        labels: {
+                            fontFamily: 'Arial',
+                            fontWeight: 'bold',
+                            fill: 'rgb(50, 138, 214)',
+                            fontSize: 15,
+                        }
+                    }}
+                />
                 <StatusBar style="auto" />
             </View>
+            {/* <FlatButton text="Continue" icon="arrow-right" onPress={testPressHandler} /> */}
+            <FlatButton text="Continue" icon="arrow-right" onPress={()=>{navigation.navigate('Home')}} />
         </View>
     )
 }
