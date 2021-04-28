@@ -18,6 +18,15 @@
     <string>1.0.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.dylanhuang.surveyBlue</string>
+        </array>
+      </dict>
+    </array>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSRequiresIPhoneOS</key>
@@ -35,14 +44,25 @@
         </dict>
       </dict>
     </dict>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>This app requires full bluetooth access to function</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>This app requires full bluetooth access to function</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string/>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>bluetooth-central</string>
+      <string>bluetooth-peripheral</string>
+    </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
       <string>armv7</string>
     </array>
+    <key>UIRequiresFullScreen</key>
+    <true/>
     <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>
@@ -50,17 +70,8 @@
     </array>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>CFBundleURLTypes</key>
-    <array>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.dylanhuang.surveyBlue</string>
-        </array>
-      </dict>
-    </array>
-    <key>UIRequiresFullScreen</key>
-    <true/>
+    <key>UIUserInterfaceStyle</key>
+    <string>Light</string>
     <key>CFBundleDisplayName</key>
     <string>surveyBlue</string>
   </dict>
