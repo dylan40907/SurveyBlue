@@ -1,7 +1,8 @@
 import React from 'react'
 import {View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import StartPeripheral from './bluetooth/peripheral.js'
-// import StartScanning from './bluetooth/scanner.js'
+import StartScanning from './bluetooth/scanner.js'
+import { BleManager, State } from 'react-native-ble-plx'
 
 export default () => {
 
@@ -11,8 +12,7 @@ export default () => {
     }
 
     const startScanning = () => {
-        console.log('scan button pressed')
-        // StartScanning()
+        StartScanning()
     }
 
     return (

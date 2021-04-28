@@ -1,23 +1,18 @@
 import { BleManager } from 'react-native-ble-plx';
 
-export const manager = new BleManager();
-
 export default () => {
-    manager.onStateChange((state) => {
+    console.log('scan button pressed')
+    
+    const bleManager = new BleManager()
+    const subscription = bleManager.onStateChange((state) => {
         if (state === 'PoweredOn') {
-            manager.startDeviceScan(null, null, (error, device) => {
-                if (error) {
-                    console.log(error)
-                    return
-                }
-                console.log('scanning...' + device.name)
-                if (device.name === 'SurveyBlue') {
-                    console.log('device found')
-                    device.connect().then((device) => {
-                        console.log('connected to surveyblue device')
-                    })
-                }
-            })
+        bleManager.startDeviceScan(null, null, (error, device) => {
+            if (error) {
+            console.log(error)
+            return
+            }
+            console.log('scanning ' + device.name + ' ' + device.id)
+        })
         }
     })
 }
