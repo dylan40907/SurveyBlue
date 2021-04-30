@@ -1,7 +1,7 @@
 import React from 'react'
 import {View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import StartPeripheral from './bluetooth/peripheral.js'
-import StartScanning from './bluetooth/scanner.js'
+import StartScanning, {DisconnectDevice} from './bluetooth/scanner.js'
 import { BleManager, State } from 'react-native-ble-plx'
 
 export default () => {
@@ -15,11 +15,16 @@ export default () => {
         StartScanning()
     }
 
+    const disconnect = () => {
+        DisconnectDevice()
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={startAdvertising}><Text>Start Advertising</Text></TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={startScanning}><Text>Start Scanning</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={disconnect}><Text>Disconnect</Text></TouchableOpacity>
             </View>
         </View>
     )
