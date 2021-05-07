@@ -1,5 +1,7 @@
 import { BleManager } from 'react-native-ble-plx';
 import { charUuid, serviceUuid } from './peripheral'
+import { decode } from 'js-base64'
+
 
 // const deviceId = '35AA4E8F-691A-EBC1-C160-AE2E3EEE2F68'
 
@@ -44,9 +46,14 @@ export default () => {
 
                     console.log(tempDevice)
 
+                    const char = await surveyBlue.readCharacteristicForService(
+                        serviceUuid,
+                        charUuid
+                    )
+
                     console.log('connected to SurveyBlue')
 
-                    console.log(tempDeviceId, serviceUuid, charUuid)
+                    console.log(decode(char.value))
                 } catch (error) {
                     // console.log(error)
                     throw new Error(error)
