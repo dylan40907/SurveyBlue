@@ -1,16 +1,20 @@
 import { BleManager } from 'react-native-ble-plx';
 import { charUuid, serviceUuid } from './peripheral'
 import { decode } from 'js-base64'
+import { getData, storeData } from '../../shared/storageFunctions'
 
-
-// const deviceId = '35AA4E8F-691A-EBC1-C160-AE2E3EEE2F68'
-
-export const DisconnectDevice = () => {
+export const DisconnectDevice = async () => {
     console.log('disconnecting...')
 
     const bleManager = new BleManager()
 
-    bleManager.cancelDeviceConnection("26B35C17-7C5E-20F0-98D3-720C39198A4C")
+    // const deviceId = await getData('recentDeviceId')
+
+    bleManager.onStateChange((state) => {
+        if (state === 'PoweredOn') {
+            bleManager.cancelDeviceConnection('7315226F-0066-1F05-4ED1-655F36A63619')
+        }
+    })
 }
 
 export default () => {
@@ -33,6 +37,7 @@ export default () => {
                 console.log('SurveyBlue device has been found')
                 console.log('device', device.id, device.name, device.rssi)
 
+                await storeData(device.id, 'recentDeviceId')
                 const tempDeviceId = device.id
 
                 try {
@@ -44,7 +49,7 @@ export default () => {
 
                     const tempDevice = await surveyBlue.discoverAllServicesAndCharacteristics()
 
-                    console.log(tempDevice)
+                    // console.log(tempDevice)
 
                     const char = await surveyBlue.readCharacteristicForService(
                         serviceUuid,
@@ -58,10 +63,8 @@ export default () => {
                     // console.log(error)
                     throw new Error(error)
                 } finally {
-                    setTimeout(function(){
-                        bleManager.cancelDeviceConnection(tempDeviceId)
+                        await bleManager.cancelDeviceConnection(tempDeviceId)
                         console.log('device disconnected')
-                    }, 5000)
                     // bleManager.cancelDeviceConnection(tempDeviceId)
                     // console.log('device disconnected')
 
