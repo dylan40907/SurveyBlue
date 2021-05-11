@@ -133,7 +133,7 @@ export default function App({ navigation }) {
                 )}
             />
             <View style={styles.button}>
-                <FlatButton text="Submit" icon="arrow-right" onPress={submitHandler} />
+                <FlatButton text="Next" icon="arrow-right" onPress={submitHandler} />
             </View>
             <StatusBar style="auto" />
         </View>

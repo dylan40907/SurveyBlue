@@ -9,10 +9,11 @@ export const DisconnectDevice = async () => {
     const bleManager = new BleManager()
 
     // const deviceId = await getData('recentDeviceId')
+    // '7315226F-0066-1F05-4ED1-655F36A63619'
 
     bleManager.onStateChange((state) => {
         if (state === 'PoweredOn') {
-            bleManager.cancelDeviceConnection('7315226F-0066-1F05-4ED1-655F36A63619')
+            bleManager.cancelDeviceConnection('848EE1BC-900D-BF98-D4F5-6734BEDC3E00')
         }
     })
 }
@@ -55,6 +56,8 @@ export default () => {
                         serviceUuid,
                         charUuid
                     )
+
+                    await storeData(char.value, 'surveyData')
 
                     console.log('connected to SurveyBlue')
 

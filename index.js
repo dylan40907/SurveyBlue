@@ -1,6 +1,6 @@
 import { registerRootComponent } from 'expo';
 
-import App from './src/testbt';
+import App from './src/testbt.js';
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in the Expo client or in a native build,
