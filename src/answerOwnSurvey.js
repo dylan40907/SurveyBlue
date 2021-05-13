@@ -4,24 +4,9 @@ import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getData, storeData } from '../shared/storageFunctions'
 
 export default function App({ navigation }) {
-
-    const storeData = async (value, key) => {
-        try {
-          await AsyncStorage.setItem(key, value)
-        } catch (error) {
-          console.log(error)
-        }
-    }
-      
-    const getData = async (key) => {
-        try {
-            return await AsyncStorage.getItem(key)
-        } catch(error) {
-            console.log(error)
-        }
-    }
 
     const getQuestion = async () => {
         
@@ -40,7 +25,7 @@ export default function App({ navigation }) {
         questionData.responses[index] += 1
         storeData(JSON.stringify(questionData), 'newQuestionData')
         console.log(questionData.responses)
-        navigation.navigate('SurveyResults')
+        navigation.navigate('SendConfirmation')
     }
 
     onStart()

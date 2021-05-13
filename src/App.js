@@ -2,9 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
-import { StyleSheet, Text, View } from 'react-native';
-import { globalStyles } from '../styles/global.js'
-import FlatButton from '../shared/button'
+import { StyleSheet } from 'react-native';
 import Navigator from '../routes/stack'
 
 const getFonts = () => Font.loadAsync({
@@ -18,7 +16,6 @@ export default function App() {
     return (
       <Navigator />
     );
-    navigation.navigate('Question3')
   } else {
     return (
       <AppLoading 

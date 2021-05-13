@@ -12,26 +12,7 @@ import Home from '../src/Home'
 import CreateSurvey from '../src/createSurvey'
 import AnswerOwnSurvey from '../src/answerOwnSurvey'
 import SurveyResults from '../src/surveyResults'
-
-function homeButtons () {
-    return (
-        <View style={styles.buttons}>
-            <TouchableOpacity style={styles.editButton}>
-                <View style={styles.editButton}>
-                    <FontAwesome name="circle" size={58} color="rgb(50, 138, 214)" />
-                    <View style={styles.pen}>
-                        <FontAwesome5 name="pen" size={25} color="white" />
-                    </View>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.addButton}>
-                <View>
-                    <AntDesign name="pluscircle" size={50} color="rgb(50, 138, 214)" />
-                </View>
-            </TouchableOpacity>
-        </View>
-    )
-}
+import SendConfirmation from '../src/sendConfirmation'
 
 const screens = {
     Welcome: {
@@ -94,6 +75,14 @@ const screens = {
         screen: AnswerOwnSurvey,
         navigationOptions: {
             title: 'Answer Your Own Survey',
+            headerLeft: () => null,
+            gestureEnabled: false,
+        }
+    },
+    SendConfirmation: {
+        screen: SendConfirmation,
+        navigationOptions: {
+            title: 'Confirmation',
             headerLeft: () => null,
             gestureEnabled: false,
         }

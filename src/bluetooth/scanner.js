@@ -2,21 +2,22 @@ import { BleManager } from 'react-native-ble-plx';
 import { charUuid, serviceUuid } from './peripheral'
 import { decode } from 'js-base64'
 import { getData, storeData } from '../../shared/storageFunctions'
+import { or } from 'react-native-reanimated';
 
-export const DisconnectDevice = async () => {
-    console.log('disconnecting...')
+// export const DisconnectDevice = async () => {
+//     console.log('disconnecting...')
 
-    const bleManager = new BleManager()
+//     const bleManager = new BleManager()
 
-    // const deviceId = await getData('recentDeviceId')
-    // '7315226F-0066-1F05-4ED1-655F36A63619'
+//     // const deviceId = await getData('recentDeviceId')
+//     // '7315226F-0066-1F05-4ED1-655F36A63619'
 
-    bleManager.onStateChange((state) => {
-        if (state === 'PoweredOn') {
-            bleManager.cancelDeviceConnection('848EE1BC-900D-BF98-D4F5-6734BEDC3E00')
-        }
-    })
-}
+//     bleManager.onStateChange((state) => {
+//         if (state === 'PoweredOn') {
+//             bleManager.cancelDeviceConnection('49FE84ED-3A0E-59B6-3D52-8DE0A11DEF3A')
+//         }
+//     })
+// }
 
 export default () => {
     console.log('scan button pressed')
@@ -34,7 +35,7 @@ export default () => {
             }
             console.log('scanning ' + device.name + ' ' + device.id)
 
-            if (device.name === 'SurveyBlue') {
+            if (device.name === 'SurveyBlue' || device.name === 'iPhone') {
                 console.log('SurveyBlue device has been found')
                 console.log('device', device.id, device.name, device.rssi)
 
@@ -42,11 +43,11 @@ export default () => {
                 const tempDeviceId = device.id
 
                 try {
-                    bleManager.stopDeviceScan()
+                    // bleManager.stopDeviceScan()
 
                     const surveyBlue = await device.connect()
 
-                    // console.log(surveyBlue)
+                    console.log(surveyBlue.name)
 
                     const tempDevice = await surveyBlue.discoverAllServicesAndCharacteristics()
 
@@ -57,11 +58,19 @@ export default () => {
                         charUuid
                     )
 
-                    await storeData(char.value, 'surveyData')
+                    if (char.serviceUUID == serviceUuid) {
+                        await storeData(char.value, 'surveyData')
 
-                    console.log('connected to SurveyBlue')
+                        console.log('connected to SurveyBlue')
 
-                    console.log(decode(char.value))
+                        console.log(decode(char.value))
+
+                        
+                    } else {
+                        console.log('This is not a SurveyBlue device')
+                    }
+
+                    
                 } catch (error) {
                     // console.log(error)
                     throw new Error(error)

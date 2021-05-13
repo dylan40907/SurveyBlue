@@ -4,6 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { uuidv4 } from './bluetooth/uuidGenerator'
+import { getData, storeData } from '../shared/storageFunctions.js';
 
 export default function App({ navigation }) {
 
@@ -12,22 +14,7 @@ export default function App({ navigation }) {
         if (await getData('welcomeFinished') == 'true') {
             navigation.replace('Home') // supposed to be home
         }
-    }
-
-    const storeData = async (value, key) => {
-        try {
-          await AsyncStorage.setItem(key, value)
-        } catch (error) {
-          console.log(error)
-        }
-    }
-
-    const getData = async (key) => {
-        try {
-            return await AsyncStorage.getItem(key)
-        } catch(error) {
-            console.log(error)
-        }
+        storeData(uuidv4(), 'userUuid')
     }
 
     const pressHandler = () => {
