@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import { FontAwesome5, AntDesign, FontAwesome } from '@expo/vector-icons';
+import Scanner from './bluetooth/scanner'
 
 
 export default function App({ navigation }) {
@@ -19,6 +20,10 @@ export default function App({ navigation }) {
     ];
 
     const [graphicData, setGraphicData] = useState(defaultGraphicData);
+
+    const [surveys, setSurveys] = useState([])
+
+    Scanner(surveys, setSurveys)
 
     return (
         <View style={styles.container}>
@@ -36,6 +41,15 @@ export default function App({ navigation }) {
                         <AntDesign name="pluscircle" size={50} color="rgb(50, 138, 214)" />
                     </View>
                 </TouchableOpacity>
+            </View>
+            <View style={styles.surveys}>
+                <FlatList 
+                    data={surveys}
+                    renderItem={({item}) => (
+                        <View><Text>{item.question}</Text></View>
+                    )}
+                    keyExtractor={item => item.surveyUuid}
+                />
             </View>
             <StatusBar style="auto" />
         </View>
@@ -63,5 +77,9 @@ const styles = StyleSheet.create({
     },
     pen: {
         position: 'absolute'
+    },
+    surveys: {
+        borderWidth: 1.5,
+        borderRadius: 4
     }
   });  

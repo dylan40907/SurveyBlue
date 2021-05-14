@@ -24,7 +24,7 @@ export default () => {
     // }
 
     const update = async () => {
-        setSurveyData(decode(await getData('surveyData')))
+        setSurveyData(await getData('surveyData'))
     }
 
     return (

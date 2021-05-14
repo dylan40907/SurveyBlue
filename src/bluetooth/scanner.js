@@ -19,71 +19,94 @@ import { or } from 'react-native-reanimated';
 //     })
 // }
 
-export default () => {
+const bleManager = new BleManager()
+
+let subscription
+
+export default async (surveys, setSurveys) => {
     console.log('scan button pressed')
     
-    const bleManager = new BleManager()
-
     // bleManager.cancelDeviceConnection("26B35C17-7C5E-20F0-98D3-720C39198A4C")
+        if (await bleManager.state() === 'PoweredOn') {
+        StartScanning(surveys, setSurveys)
+    } else {
+        if (subscription) {
+            subscription.remove()
+        }
 
-    const subscription = bleManager.onStateChange((state) => {
-        if (state === 'PoweredOn') {
-        bleManager.startDeviceScan(null, null, async (error, device) => {
-            if (error) {
-            console.log(error)
-                return
+        subscription = bleManager.onStateChange((state) => {
+            if (state === 'PoweredOn') {
+                StartScanning()
             }
-            console.log('scanning ' + device.name + ' ' + device.id)
+        })
+    }
+}
 
-            if (device.name === 'SurveyBlue' || device.name === 'iPhone') {
-                console.log('SurveyBlue device has been found')
-                console.log('device', device.id, device.name, device.rssi)
+function StartScanning (surveys, setSurveys) {
+    bleManager.startDeviceScan(null, null, async (error, device) => {
+        if (error) {
+        console.log(error)
+            return
+        }
+        console.log('scanning ' + device.name + ' ' + device.id)
 
-                await storeData(device.id, 'recentDeviceId')
-                const tempDeviceId = device.id
+        if (device.name === 'SurveyBlue' || device.name === 'iPhone') {
+            console.log('SurveyBlue device has been found')
+            console.log('device', device.id, device.name, device.rssi)
+
+            await storeData(device.id, 'recentDeviceId')
+            const tempDeviceId = device.id
+
+            try {
+                // bleManager.stopDeviceScan()
+
+                const surveyBlue = await device.connect()
+
+                console.log(surveyBlue.name)
+
+                const tempDevice = await surveyBlue.discoverAllServicesAndCharacteristics()
+
+                // console.log(tempDevice)
 
                 try {
-                    // bleManager.stopDeviceScan()
-
-                    const surveyBlue = await device.connect()
-
-                    console.log(surveyBlue.name)
-
-                    const tempDevice = await surveyBlue.discoverAllServicesAndCharacteristics()
-
-                    // console.log(tempDevice)
-
                     const char = await surveyBlue.readCharacteristicForService(
                         serviceUuid,
                         charUuid
-                    )
+                    )   
 
                     if (char.serviceUUID == serviceUuid) {
-                        await storeData(char.value, 'surveyData')
+                        const newSurvey = decode(char.value)
 
+                        console.log(surveys)
+    
+                        if (!surveys.find(survey => survey.surveyUuid == newSurvey.surveyUuid)) {
+                            setSurveys(surveys.concat(JSON.parse(newSurvey)))
+                        }
+
+                        console.log(surveys)
+    
                         console.log('connected to SurveyBlue')
-
+    
                         console.log(decode(char.value))
-
-                        
                     } else {
                         console.log('This is not a SurveyBlue device')
                     }
-
-                    
                 } catch (error) {
-                    // console.log(error)
-                    throw new Error(error)
-                } finally {
-                        await bleManager.cancelDeviceConnection(tempDeviceId)
-                        console.log('device disconnected')
-                    // bleManager.cancelDeviceConnection(tempDeviceId)
-                    // console.log('device disconnected')
-
+                    console.log(error)
                 }
 
+                
+            } catch (error) {
+                // console.log(error)
+                throw new Error(error)
+            } finally {
+                    await bleManager.cancelDeviceConnection(tempDeviceId)
+                    console.log('device disconnected')
+                // bleManager.cancelDeviceConnection(tempDeviceId)
+                // console.log('device disconnected')
+
             }
-        })
+
         }
     })
 }
