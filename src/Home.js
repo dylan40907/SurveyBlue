@@ -2,9 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global.js'
-import FlatButton from '../shared/button'
 import { FontAwesome5, AntDesign, FontAwesome } from '@expo/vector-icons';
 import Scanner from './bluetooth/scanner'
+import { getData, storeData } from '../shared/storageFunctions'
 
 
 export default function App({ navigation }) {
@@ -21,9 +21,22 @@ export default function App({ navigation }) {
 
     const [graphicData, setGraphicData] = useState(defaultGraphicData);
 
-    const [surveys, setSurveys] = useState([])
+    const [surveys, setSurveys] = useState([
+        {
+            question: 'Test Survey',
+            choices: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4'],
+            responses: [0, 1, 0],
+            surveyUuid: 'asdkajhsjdkhk'
+        }
+    ])
 
-    Scanner(surveys, setSurveys)
+    // Scanner(setSurveys)
+
+    const answerSurvey = (item) => {
+        console.log(item)
+        storeData(JSON.stringify(item), 'selectedSurveyData')
+        navigation.navigate('AnswerSurvey')
+    }
 
     return (
         <View style={styles.container}>
@@ -42,11 +55,12 @@ export default function App({ navigation }) {
                     </View>
                 </TouchableOpacity>
             </View>
+            <Text style={styles.surveysTitle}>Open Surveys</Text>
             <View style={styles.surveys}>
                 <FlatList 
                     data={surveys}
                     renderItem={({item}) => (
-                        <View><Text>{item.question}</Text></View>
+                        <TouchableOpacity onPress={() => {answerSurvey(item)}} style={styles.survey}><Text style={styles.surveyName}>{item.question}</Text></TouchableOpacity>
                     )}
                     keyExtractor={item => item.surveyUuid}
                 />
@@ -79,7 +93,24 @@ const styles = StyleSheet.create({
         position: 'absolute'
     },
     surveys: {
-        borderWidth: 1.5,
-        borderRadius: 4
+    },
+    surveysTitle: {
+        fontFamily: 'din-bold',
+        fontSize: 25,
+        marginBottom: 6,
+        marginTop: 10,
+        textAlign: 'center'
+    },
+    survey: {
+        borderWidth: 2,
+        borderRadius: 4,
+        borderColor: 'rgb(197, 206, 214)',
+        marginTop: 5,
+        marginBottom: 5
+    },
+    surveyName: {
+        fontFamily: 'din-regular',
+        margin: 12,
+        fontSize: 20,
     }
   });  

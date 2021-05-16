@@ -13,6 +13,7 @@ import CreateSurvey from '../src/createSurvey'
 import AnswerOwnSurvey from '../src/answerOwnSurvey'
 import SurveyResults from '../src/surveyResults'
 import SendConfirmation from '../src/sendConfirmation'
+import AnswerSurvey from '../src/answerSurvey'
 
 const screens = {
     Welcome: {
@@ -91,6 +92,14 @@ const screens = {
         screen: SurveyResults,
         navigationOptions: {
             title: 'Survey Results',
+            headerLeft: () => null,
+            gestureEnabled: false,
+        }
+    },
+    AnswerSurvey: {
+        screen: AnswerSurvey,
+        navigationOptions: {
+            title: 'Answer Survey',
             headerLeft: () => null,
             gestureEnabled: false,
         }

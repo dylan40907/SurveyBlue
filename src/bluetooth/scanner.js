@@ -42,7 +42,8 @@ export default async (surveys, setSurveys) => {
     }
 }
 
-function StartScanning (surveys, setSurveys) {
+function StartScanning (setSurveys) {
+
     bleManager.startDeviceScan(null, null, async (error, device) => {
         if (error) {
         console.log(error)
@@ -54,7 +55,6 @@ function StartScanning (surveys, setSurveys) {
             console.log('SurveyBlue device has been found')
             console.log('device', device.id, device.name, device.rssi)
 
-            await storeData(device.id, 'recentDeviceId')
             const tempDeviceId = device.id
 
             try {
@@ -75,15 +75,23 @@ function StartScanning (surveys, setSurveys) {
                     )   
 
                     if (char.serviceUUID == serviceUuid) {
-                        const newSurvey = decode(char.value)
 
-                        console.log(surveys)
+                        const newSurvey = JSON.parse(decode(char.value))
     
-                        if (!surveys.find(survey => survey.surveyUuid == newSurvey.surveyUuid)) {
-                            setSurveys(surveys.concat(JSON.parse(newSurvey)))
-                        }
+                        setSurveys((surveys) => {
+                            const found = surveys.find(survey => {
+                                console.log(survey.surveyUuid, newSurvey.surveyUuid)
+                                return survey.surveyUuid == newSurvey.surveyUuid
+                            })
 
-                        console.log(surveys)
+                            console.log(found)
+
+                            if (!found) {
+                                storeData(JSON.stringify(surveys.concat(newSurvey)), 'openSurveys')
+                                return surveys.concat(newSurvey)
+                            }
+                            return surveys
+                        })
     
                         console.log('connected to SurveyBlue')
     
@@ -98,7 +106,7 @@ function StartScanning (surveys, setSurveys) {
                 
             } catch (error) {
                 // console.log(error)
-                throw new Error(error)
+                console.log(error)
             } finally {
                     await bleManager.cancelDeviceConnection(tempDeviceId)
                     console.log('device disconnected')

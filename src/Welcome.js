@@ -14,10 +14,10 @@ export default function App({ navigation }) {
         if (await getData('welcomeFinished') == 'true') {
             navigation.replace('Home') // supposed to be home
         }
-        storeData(uuidv4(), 'userUuid')
     }
 
     const pressHandler = () => {
+        storeData(JSON.stringify(uuidv4()), 'userUuid')
         navigation.replace('Question1')
     }
 
