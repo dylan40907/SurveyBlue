@@ -1,6 +1,6 @@
 import { BleManager } from 'react-native-ble-plx';
-import { charUuid, serviceUuid } from './peripheral'
-import { decode } from 'js-base64'
+import { charUuid, serviceUuid, responseUuid } from './peripheral'
+import { decode, encode } from 'js-base64'
 import { getData, storeData } from '../../shared/storageFunctions'
 import { or } from 'react-native-reanimated';
 
@@ -77,11 +77,30 @@ function StartScanning (setSurveys) {
                     if (char.serviceUUID == serviceUuid) {
 
                         const newSurvey = JSON.parse(decode(char.value))
-    
+                        
+                        const recentResponseData = JSON.parse(await getData('responseData'))
+
+                        console.log('recentResponseData: ' + recentResponseData)
                         setSurveys((surveys) => {
-                            const found = surveys.find(survey => {
-                                console.log(survey.surveyUuid, newSurvey.surveyUuid)
-                                return survey.surveyUuid == newSurvey.surveyUuid
+                            
+                            let foundIndex = -1
+
+                            let responsesMatch
+
+                            const found = surveys.find((survey, index) => {
+
+                                if (survey.surveyUuid == newSurvey.surveyUuid) {
+                                    if (JSON.stringify(survey.responses) != JSON.stringify(newSurvey.responses)) {
+                                        responsesMatch = false
+                                    }
+
+                                    responsesMatch = true
+
+                                    foundIndex = index
+                                    return true
+                                }
+
+                                return false
                             })
 
                             console.log(found)
@@ -90,8 +109,39 @@ function StartScanning (setSurveys) {
                                 storeData(JSON.stringify(surveys.concat(newSurvey)), 'openSurveys')
                                 return surveys.concat(newSurvey)
                             }
+
+                            if (!responsesMatch) {
+                                return surveys.map((survey, index) => {
+                                    if (index == foundIndex) {
+                                        const updatedSurvey = survey
+                                        updatedSurvey.responses = newSurvey.responses
+                                        return updatedSurvey
+                                    }
+                                    return survey
+                                })
+                            }
+                            
                             return surveys
                         })
+                        if (recentResponseData.surveyUuid == newSurvey.surveyUuid) {
+                            console.log('sent or not:')
+                            console.log(recentResponseData)
+
+                            if (recentResponseData.sent == false) {
+                                recentResponseData.sent = true
+
+                                console.log('sending response...')
+
+                                console.log(recentResponseData)
+
+                                storeData(JSON.stringify(recentResponseData), 'responseData')
+                                
+                                await surveyBlue.writeCharacteristicWithResponseForService(serviceUuid, responseUuid, encode(JSON.stringify(recentResponseData)))
+
+                                storeData('', 'responseData')
+                                console.log('response SENT')
+                            }
+                        }
     
                         console.log('connected to SurveyBlue')
     

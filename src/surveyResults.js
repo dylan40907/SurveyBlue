@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,10 +28,20 @@ export default function App({ navigation }) {
     const [responseData, setResponseData] = useState([])
     const graphicColor = ['#388087', '#6fb3b8', '#badfe7'];
 
-    const onStart = async () => {
-        // navigation.navigate('Question3')
+
+    useEffect(() => {
+        const onStart = async () => {
+            // navigation.navigate('Question3')
+            setQuestionData(JSON.parse(await getData('newQuestionData')))
+        }
+        onStart()
+    }, [])
+
+    const reload = async () => {
         setQuestionData(JSON.parse(await getData('newQuestionData')))
     }
+
+    setTimeout(reload, 5000)
 
     // const testPressHandler = async () => {
     //     questionData.responses && questionData.responses.map((item, index) => {
@@ -44,8 +54,6 @@ export default function App({ navigation }) {
     const labels = responseData.map((item) => {
         return`${item.y}`
     })
-
-    onStart()
 
     return (
         <View style={globalStyles.container}>
@@ -76,6 +84,7 @@ export default function App({ navigation }) {
             </View>
             {/* <FlatButton text="Continue" icon="arrow-right" onPress={testPressHandler} /> */}
             <FlatButton text="Continue" icon="arrow-right" onPress={()=>{navigation.navigate('Home')}} />
+            {/* <FlatButton  text='Reload' icon='' onPress={reload}/> */}
         </View>
     )
 }

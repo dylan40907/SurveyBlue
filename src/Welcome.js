@@ -10,14 +10,13 @@ import { getData, storeData } from '../shared/storageFunctions.js';
 export default function App({ navigation }) {
 
     const checker = async () => {
-        // await storeData('', 'welcomeFinished')
         if (await getData('welcomeFinished') == 'true') {
             navigation.replace('Home') // supposed to be home
         }
     }
 
     const pressHandler = () => {
-        storeData(JSON.stringify(uuidv4()), 'userUuid')
+        storeData(uuidv4(), 'userUuid')
         navigation.replace('Question1')
     }
 

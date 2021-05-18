@@ -12,9 +12,15 @@ export default function App({ navigation }) {
     const pressHandler = async () => {
         const surveyData = JSON.parse(await getData('newQuestionData'))
         surveyData.surveyUuid = uuidv4()
-        storeData(JSON.stringify(surveyData), 'newQuestionData')
+        await storeData(JSON.stringify(surveyData), 'newQuestionData')
+        await storeData(JSON.stringify([]), 'newSurveyRespondants')
+
+        console.log('Survey Created...')
+        console.log(surveyData)
 
         StartPeripheral()
+
+        navigation.navigate('SurveyResults')
     }
 
     return (

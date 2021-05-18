@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
@@ -14,30 +14,37 @@ export default function App({ navigation }) {
 
     const [questionData, setQuestionData] = useState({})
 
-    let userUuid
-
-    const onStart = async () => {
-        // navigation.navigate('Question3')
-        const data = await getData('selectedSurveyData')
-        // userUuid = await getData('userUuid')
-        // console.log(JSON.parse(data).choices)
-        setQuestionData(JSON.parse(data))
-    }
+    useEffect(() => {
+        const onStart = async () => {
+            const data = await getData('selectedSurveyData')
+            console.log('debugging')
+            console.log(JSON.parse(data))
+            setQuestionData(JSON.parse(data))
+        }
+        onStart()
+    }, [])
 
     const pressHandler = async (index) => {
+        const userUuid = await getData('userUuid')
+
+        console.log('preparing response...')
+
+        const responseData = {
+            choiceIndex: 0,
+            surveyUuid: questionData.surveyUuid,
+            userUuid: userUuid,
+            sent: false
+        }
+
         responseData.choiceIndex = index
+
+        await storeData(JSON.stringify(responseData), 'responseData')
+        console.log('responseData:')
         console.log(responseData)
-        console.log(JSON.parse(await getData('userUuid')))
-        // navigation.navigate('SendConfirmation')
+        navigation.navigate('SurveyResults')
     }
 
-    onStart()
-
-    const responseData = {
-        choiceIndex: 0,
-        surveyUuid: questionData.surveyUuid,
-        userUuid: userUuid
-    }
+    // onStart()
 
     return (
         <View style={globalStyles.container}>

@@ -21,18 +21,12 @@ export default function App({ navigation }) {
 
     const [graphicData, setGraphicData] = useState(defaultGraphicData);
 
-    const [surveys, setSurveys] = useState([
-        {
-            question: 'Test Survey',
-            choices: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4'],
-            responses: [0, 1, 0],
-            surveyUuid: 'asdkajhsjdkhk'
-        }
-    ])
+    const [surveys, setSurveys] = useState([])
 
-    // Scanner(setSurveys)
+    Scanner(setSurveys)
 
     const answerSurvey = (item) => {
+        console.log('answering survey...')
         console.log(item)
         storeData(JSON.stringify(item), 'selectedSurveyData')
         navigation.navigate('AnswerSurvey')
