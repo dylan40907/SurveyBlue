@@ -49,7 +49,7 @@ function StartScanning (setSurveys) {
         console.log(error)
             return
         }
-        console.log('scanning ' + device.name + ' ' + device.id)
+        // console.log('scanning ' + device.name + ' ' + device.id)
 
         if (device.name === 'SurveyBlue' || device.name === 'iPhone') {
             console.log('SurveyBlue device has been found')
@@ -80,7 +80,8 @@ function StartScanning (setSurveys) {
                         
                         const recentResponseData = JSON.parse(await getData('responseData'))
 
-                        console.log('recentResponseData: ' + recentResponseData)
+                        console.log('recentResponseData: ')
+                        console.log(recentResponseData)
                         setSurveys((surveys) => {
                             
                             let foundIndex = -1
@@ -90,6 +91,8 @@ function StartScanning (setSurveys) {
                             const found = surveys.find((survey, index) => {
 
                                 if (survey.surveyUuid == newSurvey.surveyUuid) {
+                                    console.log('survey responses:')
+                                    console.log(JSON.stringify(survey.responses), JSON.stringify(newSurvey.responses))
                                     if (JSON.stringify(survey.responses) != JSON.stringify(newSurvey.responses)) {
                                         responsesMatch = false
                                     }
@@ -111,6 +114,7 @@ function StartScanning (setSurveys) {
                             }
 
                             if (!responsesMatch) {
+                                console.log('responses do not match, updating survey...')
                                 return surveys.map((survey, index) => {
                                     if (index == foundIndex) {
                                         const updatedSurvey = survey
@@ -123,24 +127,18 @@ function StartScanning (setSurveys) {
                             
                             return surveys
                         })
-                        if (recentResponseData.surveyUuid == newSurvey.surveyUuid) {
+                        if (recentResponseData && recentResponseData.surveyUuid == newSurvey.surveyUuid) {
                             console.log('sent or not:')
                             console.log(recentResponseData)
 
-                            if (recentResponseData.sent == false) {
-                                recentResponseData.sent = true
+                            console.log('sending response...')
 
-                                console.log('sending response...')
+                            console.log(recentResponseData)
+                            
+                            await surveyBlue.writeCharacteristicWithResponseForService(serviceUuid, responseUuid, encode(JSON.stringify(recentResponseData)))
 
-                                console.log(recentResponseData)
-
-                                storeData(JSON.stringify(recentResponseData), 'responseData')
-                                
-                                await surveyBlue.writeCharacteristicWithResponseForService(serviceUuid, responseUuid, encode(JSON.stringify(recentResponseData)))
-
-                                storeData('', 'responseData')
-                                console.log('response SENT')
-                            }
+                            storeData('', 'responseData')
+                            console.log('response SENT')
                         }
     
                         console.log('connected to SurveyBlue')
@@ -158,11 +156,13 @@ function StartScanning (setSurveys) {
                 // console.log(error)
                 console.log(error)
             } finally {
+                try {
                     await bleManager.cancelDeviceConnection(tempDeviceId)
-                    console.log('device disconnected')
-                // bleManager.cancelDeviceConnection(tempDeviceId)
-                // console.log('device disconnected')
-
+                } catch (error) {
+                    console.log(error)
+                }
+                    
+                console.log('device disconnected')
             }
 
         }

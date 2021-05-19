@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Touchable } from 'react-native';
 import { globalStyles } from '../styles/global.js'
 import FlatButton from '../shared/button'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,7 +41,7 @@ export default function App({ navigation }) {
         await storeData(JSON.stringify(responseData), 'responseData')
         console.log('responseData:')
         console.log(responseData)
-        navigation.navigate('SurveyResults')
+        // navigation.navigate('SurveyResults')
     }
 
     // onStart()
@@ -53,6 +53,7 @@ export default function App({ navigation }) {
                 <View style={styles.buttons}>
                     {questionData.choices && questionData.choices.map((item, index) => <FlatButton key={item + index} text={item} icon="" onPress={() => {pressHandler(index)}} />)}
                 </View>
+                <TouchableOpacity style={{margin: 5}} onPress={() => {navigation.navigate('Home')}}><Text>GO HOME</Text></TouchableOpacity>
                 <StatusBar style="auto" />
             </View>
         </View>

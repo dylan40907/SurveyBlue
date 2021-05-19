@@ -61,9 +61,9 @@ const screens = {
     Home: {
         screen: Home,
         navigationOptions: {
-            headerLeft: () => null,
-            gestureEnabled: false,
-            animationEnabled: false,
+            // headerLeft: () => null,
+            // gestureEnabled: false,
+            // animationEnabled: false,
         }
     },
     CreateSurvey: {
