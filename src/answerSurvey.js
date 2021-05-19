@@ -41,7 +41,7 @@ export default function App({ navigation }) {
         await storeData(JSON.stringify(responseData), 'responseData')
         console.log('responseData:')
         console.log(responseData)
-        // navigation.navigate('SurveyResults')
+        navigation.navigate('RespondantSurveyResults')
     }
 
     // onStart()

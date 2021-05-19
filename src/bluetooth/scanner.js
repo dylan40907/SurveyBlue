@@ -3,6 +3,7 @@ import { charUuid, serviceUuid, responseUuid } from './peripheral'
 import { decode, encode } from 'js-base64'
 import { getData, storeData } from '../../shared/storageFunctions'
 import { or } from 'react-native-reanimated';
+import { stringify } from 'uuid';
 
 // export const DisconnectDevice = async () => {
 //     console.log('disconnecting...')
@@ -46,10 +47,10 @@ function StartScanning (setSurveys) {
 
     bleManager.startDeviceScan(null, null, async (error, device) => {
         if (error) {
-        console.log(error)
+            console.log('scanner cannot start')
+            console.log(error)
             return
         }
-        // console.log('scanning ' + device.name + ' ' + device.id)
 
         if (device.name === 'SurveyBlue' || device.name === 'iPhone') {
             console.log('SurveyBlue device has been found')
@@ -115,14 +116,17 @@ function StartScanning (setSurveys) {
 
                             if (!responsesMatch) {
                                 console.log('responses do not match, updating survey...')
-                                return surveys.map((survey, index) => {
+                                const updatedSurveys = surveys.map((survey, index) => {
                                     if (index == foundIndex) {
                                         const updatedSurvey = survey
                                         updatedSurvey.responses = newSurvey.responses
+                                        storeData(String(index), 'selectedSurveyIndex')
                                         return updatedSurvey
                                     }
                                     return survey
                                 })
+                                storeData(JSON.stringify(updatedSurveys), 'openSurveys')
+                                return updatedSurveys
                             }
                             
                             return surveys
