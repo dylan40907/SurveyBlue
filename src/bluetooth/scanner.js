@@ -3,7 +3,6 @@ import { charUuid, serviceUuid, responseUuid } from './peripheral'
 import { decode, encode } from 'js-base64'
 import { getData, storeData } from '../../shared/storageFunctions'
 import { or } from 'react-native-reanimated';
-import { stringify } from 'uuid';
 
 // export const DisconnectDevice = async () => {
 //     console.log('disconnecting...')
@@ -47,10 +46,10 @@ function StartScanning (setSurveys) {
 
     bleManager.startDeviceScan(null, null, async (error, device) => {
         if (error) {
-            console.log('scanner cannot start')
-            console.log(error)
+        console.log(error)
             return
         }
+        // console.log('scanning ' + device.name + ' ' + device.id)
 
         if (device.name === 'SurveyBlue' || device.name === 'iPhone') {
             console.log('SurveyBlue device has been found')
@@ -80,7 +79,6 @@ function StartScanning (setSurveys) {
                         const newSurvey = JSON.parse(decode(char.value))
                         
                         const recentResponseData = JSON.parse(await getData('responseData'))
-
                         console.log('recentResponseData: ')
                         console.log(recentResponseData)
                         setSurveys((surveys) => {
@@ -92,8 +90,6 @@ function StartScanning (setSurveys) {
                             const found = surveys.find((survey, index) => {
 
                                 if (survey.surveyUuid == newSurvey.surveyUuid) {
-                                    console.log('survey responses:')
-                                    console.log(JSON.stringify(survey.responses), JSON.stringify(newSurvey.responses))
                                     if (JSON.stringify(survey.responses) != JSON.stringify(newSurvey.responses)) {
                                         responsesMatch = false
                                     }
@@ -113,20 +109,19 @@ function StartScanning (setSurveys) {
                                 storeData(JSON.stringify(surveys.concat(newSurvey)), 'openSurveys')
                                 return surveys.concat(newSurvey)
                             }
-
+                            
                             if (!responsesMatch) {
-                                console.log('responses do not match, updating survey...')
-                                const updatedSurveys = surveys.map((survey, index) => {
+                                console.log('responses do not match')
+                                return surveys.map((survey, index) => {
                                     if (index == foundIndex) {
+                                        console.log('updating responses...')
                                         const updatedSurvey = survey
                                         updatedSurvey.responses = newSurvey.responses
-                                        storeData(String(index), 'selectedSurveyIndex')
+                                        console.log(updatedSurvey)
                                         return updatedSurvey
                                     }
                                     return survey
                                 })
-                                storeData(JSON.stringify(updatedSurveys), 'openSurveys')
-                                return updatedSurveys
                             }
                             
                             return surveys
@@ -135,14 +130,20 @@ function StartScanning (setSurveys) {
                             console.log('sent or not:')
                             console.log(recentResponseData)
 
-                            console.log('sending response...')
+                            if (recentResponseData.sent == false) {
+                                recentResponseData.sent = true
 
-                            console.log(recentResponseData)
-                            
-                            await surveyBlue.writeCharacteristicWithResponseForService(serviceUuid, responseUuid, encode(JSON.stringify(recentResponseData)))
+                                console.log('sending response...')
 
-                            storeData('', 'responseData')
-                            console.log('response SENT')
+                                console.log(recentResponseData)
+
+                                storeData(JSON.stringify(recentResponseData), 'responseData')
+                                
+                                await surveyBlue.writeCharacteristicWithResponseForService(serviceUuid, responseUuid, encode(JSON.stringify(recentResponseData)))
+
+                                storeData('', 'responseData')
+                                console.log('response SENT')
+                            }
                         }
     
                         console.log('connected to SurveyBlue')
@@ -165,8 +166,10 @@ function StartScanning (setSurveys) {
                 } catch (error) {
                     console.log(error)
                 }
-                    
                 console.log('device disconnected')
+                // bleManager.cancelDeviceConnection(tempDeviceId)
+                // console.log('device disconnected')
+
             }
 
         }

@@ -28,26 +28,22 @@ export default function App({ navigation }) {
     const [responseData, setResponseData] = useState([])
     const graphicColor = ['#388087', '#6fb3b8', '#badfe7'];
 
-
     useEffect(() => {
+        const timeoutFunction = setInterval(reload, 5000)
         const onStart = async () => {
-            // navigation.navigate('Question3')
             setQuestionData(JSON.parse(await getData('newQuestionData')))
+            console.log('onStarting...')
         }
         onStart()
-        // if (timeoutFunction) {
-        //     clearTimeout(timeoutFunction)
-        // }
+        return () => {
+            clearInterval(timeoutFunction)
+        }
     }, [])
 
     const reload = async () => {
         setQuestionData(JSON.parse(await getData('newQuestionData')))
-        // if(timeoutFunction) {
-        //     clearTimeout(timeoutFunction)
-        // }
+        console.log('reloading...')
     }
-
-    // const [timeoutFunction, setTimeoutFunction] = useState(setTimeout(reload, 5000))
 
     // const testPressHandler = async () => {
     //     questionData.responses && questionData.responses.map((item, index) => {
@@ -57,114 +53,40 @@ export default function App({ navigation }) {
     //     console.log(responseData)
     // }
     
-    const labels = questionData.choices
-
-    const [testData, setTestData] = useState([
-        { y: 5, fillColor: graphicColor[0]}, 
-        { y: 1, fillColor: graphicColor[1]}
-    ])
-
-    const chartTheme = {
-        axis: {
-          style: {
-            tickLabels: {
-              // this changed the color of my numbers to white
-              fill: 'white',
-            },
-          },
-        },
-    };
+    const labels = responseData.map((item) => {
+        return`${item.y}`
+    })
 
     return (
         <View style={globalStyles.container}>
             <View style={styles.container}>
                 <Text style={globalStyles.titleText}>{questionData.question}</Text>
                 <Text>{questionData.responses}</Text>
-                {/* <VictoryChart
-                    theme={ chartTheme }
-                    width={250}
-                    height={220}
-                    animate={{
-                        duration: 2000,
-                        onLoad: { duration: 1000 }
-                    }}
-                    // domain={{x: [0, 1], y: [0, 10]}}
-                    maxDomain={{ x: 1}}
-                    domainPadding={{ x: 40 }}
-                > */}
-                {/* <VictoryBar
-                    animate={{
-                        duration: 1000,
-                        onLoad: { duration: 1000 },
-                        easing: 'exp'
-                    }}
-                    height={300}
-                    width={200}
+                <VictoryPie 
+                    animate={{ easing: 'exp', duration: 1000 }}
+                    data={responseData} 
+                    width={Dimensions.get("window").width}
+                    height={300} 
+                    colorScale={graphicColor} 
+                    innerRadius={40}
                     cornerRadius={4}
-                    data={testData}
-                    labelComponent={<VictoryLabel dy={25}/>}
+                    padAngle={5}
+                    labelRadius={110}
                     labels={labels}
                     style={{
-                        data: {
-                            fill: ({datum}) => datum.fillColor,
-                            width: 45
-                        },
                         labels: {
                             fontFamily: 'Arial',
                             fontWeight: 'bold',
+                            fill: 'rgb(50, 138, 214)',
                             fontSize: 15,
-                            fill: 'white'
                         }
                     }}
-                /> */}
-                {/* </VictoryChart> */}
-                {/* <VictoryChart
-                    // theme={ chartTheme }
-                    width={350}
-                    height={220}
-                    animate={{
-                        duration: 2000,
-                        onLoad: { duration: 1000 }
-                    }}
-                    domain={{x: [1, 3], y: [0, 10]}}
-                    domainPadding={{ x: 40 }}
-                >
-                    <VictoryBar 
-                        animate={{
-                            duration: 1000,
-                            onLoad: { duration: 1000 }
-                        }}      
-                        cornerRadius={4}                
-                        data={testData}
-                        colorScale={graphicColor}
-                        labelComponent={<VictoryLabel dy={25}/>}
-                        labels={labels} 
-                        style={{
-                            data: {
-                                fill: ({datum}) => datum.fillColor,
-                                width: 45
-                            },
-                            labels: {
-                                fontFamily: 'Arial',
-                                fontWeight: 'bold',
-                                fontSize: 15,
-                                fill: 'white'
-                            }
-                        }}
-                    />
-                </VictoryChart> */}
+                />
                 <StatusBar style="auto" />
             </View>
             {/* <FlatButton text="Continue" icon="arrow-right" onPress={testPressHandler} /> */}
-            <FlatButton text="Continue" icon="arrow-right" onPress={()=>{
-                navigation.navigate('Home')
-                console.log(labels)
-                setTestData([
-                    { y: 2, fillColor: graphicColor[0]}, 
-                    { y: 8, fillColor: graphicColor[1]}
-                ])
-            }} />
-            <FlatButton  text='Reload' icon='' onPress={reload}/>
+            <FlatButton text="Continue" icon="arrow-right" onPress={()=>{navigation.navigate('Home')}} />
+            {/* <FlatButton  text='Reload' icon='' onPress={reload}/> */}
         </View>
     )
 }

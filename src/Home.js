@@ -26,7 +26,7 @@ export default function App({ navigation }) {
     Scanner(setSurveys)
 
     const answerSurvey = (item) => {
-        console.log('survey selected')
+        console.log('answering survey...')
         console.log(item)
         storeData(JSON.stringify(item), 'selectedSurveyData')
         navigation.navigate('AnswerSurvey')
