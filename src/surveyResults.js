@@ -16,6 +16,7 @@ import {
   VictoryPie,
   VictoryBar,
   VictoryLabel,
+  VictoryAxis
 } from 'victory-native'
 import { getData, storeData } from '../shared/storageFunctions.js'
 import { bleManager } from './bluetooth/scanner.js'
@@ -27,12 +28,16 @@ export default function SurveyResults({ route, navigation }) {
   const [responseData, setResponseData] = useState([])
   const graphicColor = ['#388087', '#6fb3b8', '#badfe7']
 
+  const [graphicData, setGraphicData] = useState([])
+
   const getDataFromHost = async () => {
     console.log('Is Host')
     const role = await getData('role')
     if (role === 'host') {
-      setQuestionData(JSON.parse(await getData('newQuestionData')))
+      const data = JSON.parse(await getData('newQuestionData'))
+      setQuestionData(data)
       console.log('onStarting...')
+      updateGraphicData(data)
     } else {
       const questionData = JSON.parse(await getData('selectedSurveyData'))
       let data
@@ -61,7 +66,19 @@ export default function SurveyResults({ route, navigation }) {
         data = questionData
       }
       setQuestionData(data)
+      updateGraphicData(data)
     }
+  }
+
+  const updateGraphicData = (data) => {
+    const array = []
+    for (let i = 0; i < data.responses.length; i++) {
+          const xIndex = i+1
+          array.push({x: xIndex, y: data.responses[i]})
+    }
+    setGraphicData(array)
+    console.log('graphicData: ')
+    console.log(array)
   }
 
   useEffect(() => {
@@ -77,70 +94,96 @@ export default function SurveyResults({ route, navigation }) {
     console.log('reloading...')
   }
 
-  // const testPressHandler = async () => {
-  //     questionData.responses && questionData.responses.map((item, index) => {
-  //         responseData.push({y: item, label: questionData.choices[index]})
-  //         setResponseData(responseData)
-  //     })
-  //     console.log(responseData)
-  // }
-
-  const labels = responseData.map((item) => {
-    return `${item.y}`
-  })
-
   return (
     <View style={globalStyles.container}>
-      <View style={styles.container}>
-        <Text style={globalStyles.titleText}>
-          {questionData && questionData.question}
-        </Text>
-        <Text>{questionData && questionData.responses}</Text>
-        <VictoryPie
-          animate={{ easing: 'exp', duration: 1000 }}
-          data={responseData}
-          width={Dimensions.get('window').width}
-          height={300}
-          colorScale={graphicColor}
-          innerRadius={40}
-          cornerRadius={4}
-          padAngle={5}
-          labelRadius={110}
-          labels={labels}
-          style={{
-            labels: {
-              fontFamily: 'Arial',
-              fontWeight: 'bold',
-              fill: 'rgb(50, 138, 214)',
-              fontSize: 15,
-            },
-          }}
-        />
-        <StatusBar style="auto" />
-      </View>
-      {/* <FlatButton text="Continue" icon="arrow-right" onPress={testPressHandler} /> */}
-      <FlatButton
-        text="Continue"
-        icon="arrow-right"
-        onPress={() => {
-          navigation.navigate('Home')
-        }}
-      />
-      {/* <FlatButton  text='Reload' icon='' onPress={reload}/> */}
+        <View style={styles.container}>
+            <Text style={globalStyles.titleText}>{questionData && questionData.question}</Text>
+            {/* <Text style={globalStyles.titleText}>Are you vaccinated?</Text> */}
+            <Text>{questionData && questionData.responses}</Text>
+            <Text style={styles.subtitleText}>Responses</Text>
+            <View style={styles.chart}>
+                {questionData && <VictoryChart
+                    width={250}
+                    height={300}
+                    animate={{
+                        duration: 2000,
+                        onLoad: { duration: 1000 }
+                    }}
+                    domain={{x: [1, 2], y: [0, 2]}}
+                    domainPadding={{ x: 40 }}
+                >
+                    <VictoryAxis 
+                        tickFormat={() => ''} 
+                        style={{
+                            axis: {stroke: "grey"},
+                        }}
+                    />
+                    <VictoryAxis 
+                        dependentAxis crossAxis
+                        tickValues={[1, 2]}
+                        domain={[0, 2]}
+                        style={{
+                            tickLabels: {fontSize: 20, padding: 5, fontFamily: 'din-regular'}
+                        }}
+                    />
+                    <VictoryBar 
+                        animate={{
+                            duration: 1000,
+                            onLoad: { duration: 1000 }
+                        }}
+                        width={200}
+                        // cornerRadius={4}
+                        cornerRadius={{ top: 6, bottom: 6 }}
+                        data={graphicData}
+                        labelComponent={<VictoryLabel dy={30}/>}
+                        labels={questionData.choices} 
+                        style={{
+                            data: {
+                                fill: ({datum}) => graphicColor[datum.x],
+                                width: 45
+                            },
+                            labels: {
+                                fontFamily: 'din-bold',
+                                fontWeight: 'bold',
+                                fontSize: 20,
+                                fill: 'white'
+                            }
+                        }}
+                    />
+                </VictoryChart>}
+            </View>
+            <StatusBar style="auto" />
+        </View>
+        <FlatButton text="Continue" icon="arrow-right" onPress={()=>{
+            // navigation.navigate('Home')
+            setGraphicData([
+                { x: 1, y: 2 }, 
+                { x: 2, y: 0 }
+            ])
+        }} />
+        <FlatButton  text='Reload' icon='' onPress={reload}/>
     </View>
-  )
+)
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-  },
-  buttons: {
-    marginTop: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  button: {
+container: {
+    alignItems: 'center'
+},
+buttons: {
+  marginTop: 60,
+  flexDirection: 'row',
+  alignItems: 'center'
+},
+button: {
     margin: 5,
-  },
-})
+},
+chart: {
+    marginTop: -30,
+},
+subtitleText: {
+    fontFamily: 'din-regular',
+    fontSize: 20,
+    marginTop: 20
+}
+});  
