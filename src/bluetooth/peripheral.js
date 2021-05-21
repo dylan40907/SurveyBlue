@@ -7,70 +7,75 @@ export const serviceUuid = '68c48c81-d126-4243-835f-b448b5c46804'
 export const responseUuid = '1ec04410-b3a4-42f7-954c-8dd08c05da9a'
 
 export default () => {
-    Peripheral.onStateChanged(state => {
-        if (state === 'poweredOn') {
+  Peripheral.onStateChanged((state) => {
+    if (state === 'poweredOn') {
+      const defaultSurvey = new Characteristic({
+        uuid: charUuid,
+        properties: ['read'],
+        permissions: ['readable'],
+        onReadRequest: async () => {
+          const value = encode(await getData('newQuestionData'))
+          return value
+        },
+      })
 
-            const defaultSurvey = new Characteristic({
-                uuid: charUuid,
-                properties: ['read'],
-                permissions: ['readable'],
-                onReadRequest: async () => {
-                    const value = encode(await getData('newQuestionData'))
-                    return value
-                }
-            })
+      const response = new Characteristic({
+        uuid: responseUuid,
+        properties: ['write'],
+        permissions: ['writeable'],
+        onWriteRequest: async (encodedResponseData) => {
+          console.log('write requested')
 
-            const response = new Characteristic({
-                uuid: responseUuid,
-                properties: ['write'],
-                permissions: ['writeable'],
-                onWriteRequest: async (encodedResponseData) => {
-                    console.log('write requested')
-                        
-                    const responseData = JSON.parse(decode(encodedResponseData))
+          const responseData = JSON.parse(decode(encodedResponseData))
 
-                    console.log('ResponseData:')
+          console.log('ResponseData:')
 
-                    console.log(responseData)
+          console.log(responseData)
 
-                    const surveyData = JSON.parse(await getData('newQuestionData'))
+          const surveyData = JSON.parse(await getData('newQuestionData'))
 
-                    console.log('SurveyData:')
+          console.log('SurveyData:')
 
-                    console.log(surveyData)
-                    
-                    const surveyRespondants = JSON.parse(await getData('newSurveyRespondants'))
+          console.log(surveyData)
 
-                    if (surveyData.surveyUuid == responseData.surveyUuid) {
-                        if (!surveyRespondants.includes(responseData.userUuid)) {
-                            surveyData.responses[responseData.choiceIndex] += 1
+          const surveyRespondants = JSON.parse(
+            await getData('newSurveyRespondants')
+          )
 
-                            surveyRespondants.push(responseData.userUuid)
+          if (surveyData.surveyUuid == responseData.surveyUuid) {
+            if (!surveyRespondants.includes(responseData.userUuid)) {
+              surveyData.responses[responseData.choiceIndex] += 1
 
-                            console.log('response received')
+              surveyRespondants.push(responseData.userUuid)
 
-                            console.log(surveyData)
+              console.log('response received')
 
-                            storeData(JSON.stringify(surveyRespondants), 'newSurveyRespondants')
-                            storeData(JSON.stringify(surveyData), 'newQuestionData')
-                        }
-                    }
-                }
-            })
+              console.log(surveyData)
 
-            const service = new Service({
-                uuid: serviceUuid,
-                characteristics: [defaultSurvey, response]
-            })
+              storeData(
+                JSON.stringify(surveyRespondants),
+                'newSurveyRespondants'
+              )
+              storeData(JSON.stringify(surveyData), 'newQuestionData')
+              return ''
+            }
+          }
+          console.log('response is invalid')
+        },
+      })
 
-            Peripheral.addService(service).then(() => {
+      const service = new Service({
+        uuid: serviceUuid,
+        characteristics: [defaultSurvey, response],
+      })
 
-                Peripheral.startAdvertising({
-                    name: 'SurveyBlue',
-                    serviceUuids: [serviceUuid]
-                })
-                console.log('default survey advertising started...')
-            })
-        }
-    })
+      Peripheral.addService(service).then(() => {
+        Peripheral.startAdvertising({
+          name: 'SurveyBlue',
+          serviceUuids: [serviceUuid],
+        })
+        console.log('default survey advertising started...')
+      })
+    }
+  })
 }
